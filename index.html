@@ -1,0 +1,199 @@
+<html>
+<head>
+    <title>neuron_quiz</title>
+
+    <script language="javascript">
+    var delay = 30; // 시간 설정
+    var correctAnswers = new Array("a","c","a","d","c");  // 정답
+    var q_num = 1;
+    var timer;
+    var layer;
+    var clock = delay;
+    var score = 0;
+    var isAnswering = true; // 답변 가능 여부 플래그
+
+    function show_question(){
+        // 퀴즈 완료 여부 체크
+        if (localStorage.getItem("quizCompleted") === "true") {
+            var savedScore = localStorage.getItem("quizScore");
+            document.all.quizScore.innerHTML = "퀴즈를 이미 완료하셨습니다. 점수: " + savedScore + " / 5";
+            document.all.quizScore.style.display = "inline";
+            return;
+        }
+
+        if (layer = eval("document.all.question" + q_num)) {
+            layer.style.display = "inline";
+            document.all.timeLeft.innerHTML = clock;
+            isAnswering = true; // 답변 가능하게 설정
+            updateProgressBar();
+            hide_question();
+        } else {
+            document.all.timeLeft.innerHTML = 0;
+            document.all.quizScore.innerHTML = "당신은 "+(q_num-1)+"문제 중 "+score+"개를 맞췄습니다.";
+            document.all.quizScore.style.display = "inline";
+            localStorage.setItem("quizCompleted", "true");  // 퀴즈 완료 상태 저장
+            localStorage.setItem("quizScore", score);  // 점수 저장
+        }
+    }
+
+    function hide_question(){
+        if (clock > 0) {
+            document.all.timeLeft.innerHTML = clock;
+            updateProgressBar();
+            clock--;
+            timer = setTimeout("hide_question()", 1000);
+        } else {
+            clearTimeout(timer);
+            document.all.answerBoard.innerHTML = "&nbsp;";
+            clock = delay;
+            layer.style.display = "none";
+            q_num++;
+            show_question();
+        }
+    }
+
+    function check_answer(answer){
+        if (!isAnswering) return; // 이미 답변을 했으면 클릭 방지
+
+        isAnswering = false; // 클릭 비활성화
+        if (correctAnswers[q_num-1] == answer) {
+            score++;
+            document.all.answerBoard.innerHTML = "<font color='#c2f4ff'><b>정답입니다.</b></font>";
+        } else {
+            document.all.answerBoard.innerHTML = "<font color='#ff4d4d'><b>땡! 틀렸습니다.</b></font>";
+        }
+        clock = 0;
+        clearTimeout(timer);
+        timer = setTimeout("hide_question()", 700); // 0.7초 후 다음 문제로 이동
+    }
+
+    function updateProgressBar() {
+        var progressBar = document.getElementById("progressBar");
+        var width = (clock / delay) * 100;  // 남은 시간에 따라 바의 너비를 계산
+        progressBar.style.width = width + '%';
+    }
+
+    window.onload = show_question;
+    </script>
+
+    <style>
+    /* Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+    /* 전체적인 다크 모드 배경 */
+    body {
+        background-color: #121212;
+        color: #ffffff;
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+    }
+
+    /* 진행 바 스타일 */
+    .progress-container {
+        width: 100%;
+        background-color: #444;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 20px;
+        background-color: #76ff7d;
+        border-radius: 10px;
+        text-align: center;
+        color: black;
+    }
+
+    /* 링크 색상을 밝은 색으로 설정 */
+    a {
+        color: #76ff7d;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    /* 질문 스타일 */
+    b {
+        font-size: 1.2em;
+    }
+
+    /* 답변 보드 */
+    #answerBoard {
+        margin-top: 20px;
+        font-size: 1.1em;
+    }
+
+    /* 퀴즈 결과 스타일 */
+    #quizScore {
+        font-size: 1.4em;
+        font-weight: bold;
+        margin-top: 30px;
+    }
+
+    </style>
+</head>
+
+<body>
+
+제한시간 : <B><span id="timeLeft"></span></B> 초<br>
+<div class="progress-container">
+    <div id="progressBar" class="progress-bar"></div>
+</div>
+
+<br>
+
+<div id="question1" style="display:none">
+    <b>1번: 컴퓨터가 데이터를 보고 스스로 배우는 과정은?</b><br>
+    <a href="javascript:void(0)" onclick="check_answer('a')">a) 머신 러닝</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('b')">b) 러닝 머신</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('c')">c) 딥러닝</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('d')">d) 커피 머신</a><br>
+</div>
+
+<div id="question2" style="display:none">
+    <b>2번: 빈칸에 순서대로 들어갈 용어들을 고르시오</b><br>
+    <img src="quiz - 2.png" alt="Description of the image" style="max-width: 30%; height: auto;"><br>
+    <a href="javascript:void(0)" onclick="check_answer('a')">a) 동그라미, 직선, 더블유</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('b')">b) 간선, 가중치, 노드</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('c')">c) 노드, 간선, 가중치</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('d')">d) 가중치, 간선, 노드</a><br>
+</div>
+
+<div id="question3" style="display:none">
+    <b>3번: 다음 상황에서의 출력값을 구하시오</b><br>
+    <img src="quiz - 3.png" alt="Description of the image" style="max-width: 30%; height: auto;"><br>
+    <a href="javascript:void(0)" onclick="check_answer('a')">a) 1</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('b')">b) 0</a><br>
+</div>
+
+<div id="question4" style="display:none">
+    <b>4번: 다음 중 알파고가 거친 학습 과정은?</b><br>
+    <a href="javascript:void(0)" onclick="check_answer('a')">a) 선행 학습</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('b')">b) 지도 학습</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('c')">c) 비지도 학습</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('d')">d) 강화 학습</a><br>
+</div>
+
+<div id="question5" style="display:none">
+    <b>5번: 폐의 x-ray 사진을 통해 폐렴을 진단해주는 AI가 있다. 이 AI는 어떤 종류의 머신러닝인가?</b><br>
+    <img src="quiz - 5.png" alt="Description of the image" style="max-width: 30%; height: auto;"><br>
+    <a href="javascript:void(0)" onclick="check_answer('a')">a) 회귀 모델</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('b')">b) 훠궈 모델</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('c')">c) 분류 모델</a><br>
+    <a href="javascript:void(0)" onclick="check_answer('d')">d) 피팅 모델</a><br>
+</div>
+
+<div id="answerBoard">&nbsp;</div>
+<br>
+
+<div id="quizScore" style="display:none">
+</div>
+
+</body>
+</html>
